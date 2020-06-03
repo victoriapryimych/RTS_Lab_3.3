@@ -27,24 +27,28 @@ public class MainActivity extends AppCompatActivity {
                 int[] x = new int[strCoef.length];
                 for (int i = 0; i < strCoef.length; i++)
                     x[i] = Integer.parseInt(strCoef[i]);
-                int[] roots = genetic(x, y, n);
-                String res = "a = " + roots[0] + "\nb = " + roots[1] + "\nc = " + roots[2] + "\nd = " + roots[3];
+                String res = genetic(x, y, n);
                 TextView resOutput = findViewById(R.id.Result);
                 resOutput.setText(res);
             }
         });
     }
 
-    public static int[] genetic(int[] x, int y, int n) {
+    public static String genetic(int[] x, int y, int n) {
         Random rand = new Random();
         int[][] population = new int[n][x.length];
         int[] roots;
+        boolean notGenerated = true;
+        int mutNum, mutSum = 0;
+        String resStr = "";
 
         while (true) {
             //generate start population
+            if(notGenerated)
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < x.length; j++)
                     population[i][j] = rand.nextInt(y / 2);
+                notGenerated = false;
             }
             //delta calculation
             int[] deltas = new int[population.length];
@@ -52,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
                 deltas[i] = delta(x, y, population[i]);
                 if (deltas[i] == 0) {
                     roots = population[i];
-                    return roots;
+                    resStr = "a = " + roots[0] + "\nb = " + roots[1] + "\nc = " +
+                            roots[2] + "\nd = " + roots[3] + "\nMutations = " + mutSum;
+                    return resStr;
                 }
             }
 
@@ -81,13 +87,23 @@ public class MainActivity extends AppCompatActivity {
                     child[1][i] = a;
                     if (delta(x, y, child[0]) == 0) {
                         roots = child[0];
-                        return roots;
+                        resStr = "a = " + roots[0] + "\nb = " + roots[1] + "\nc = " +
+                                roots[2] + "\nd = " + roots[3] + "\nMutations = " + mutSum;
+                        return resStr;
                     }
                     if (delta(x, y, child[1]) == 0) {
                         roots = child[1];
-                        return roots;
+                        resStr = "a = " + roots[0] + "\nb = " + roots[1] + "\nc = " +
+                                roots[2] + "\nd = " + roots[3] + "\nMutations = " + mutSum;
+                        return resStr;
                     }
                 }
+            }
+            //mutations
+            mutNum = rand.nextInt(n);
+            mutSum += mutNum;
+            for (int j = 0; j < mutNum; j++) {
+                population[rand.nextInt(population.length - 1)][x.length - 1] = rand.nextInt(y / 2);
             }
         }
     }
